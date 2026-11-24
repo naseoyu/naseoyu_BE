@@ -1,0 +1,21 @@
+{
+  "schema_version": "be2.v1",
+  "provider": "mock",
+  "is_mock": true,
+  "summary": "통신 규약 예시. 실제 분석 아님.",
+  "metrics": {
+    "monthly_cost_krw": null
+  },
+  "recommendations": [],
+  "report": {
+    "title": "규약 예시",
+    "blocks": [
+      {
+        "id": "example",
+        "text": "실제 결과는 BE 1 Agent가 반환합니다.",
+        "evidence_refs": []
+      }
+    ]
+  },
+  "metadata": {}
+}

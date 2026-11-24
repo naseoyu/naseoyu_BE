@@ -1,0 +1,13 @@
+{
+  "scenario": {
+    "name": "소형 데이터센터",
+    "inputs": {
+      "gpu_count": 4,
+      "cpu_server_count": 2,
+      "storage_tb": 10,
+      "pue": "1.5",
+      "evaluation_months": 12,
+      "data_basis": "illustrative"
+    }
+  }
+}

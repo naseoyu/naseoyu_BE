@@ -200,6 +200,74 @@
         }
       }
     },
+    "/api/inspect-documents": {
+      "post": {
+        "summary": "Inspect Documents",
+        "operationId": "inspect_documents_api_inspect_documents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InspectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionResult"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -1107,6 +1175,66 @@
         ],
         "title": "Body_upload_v1_uploads_post"
       },
+      "Document": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Sizebytes"
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "local_upload",
+              "preset_sample"
+            ],
+            "title": "Sourcetype"
+          },
+          "base64Data": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20971520
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base64Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "sizeBytes",
+          "sourceType"
+        ],
+        "title": "Document"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "type": "string",
+            "title": "Error"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error",
+          "code"
+        ],
+        "title": "ErrorResponse"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1119,6 +1247,88 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "InspectionItem": {
+        "properties": {
+          "itemNumber": {
+            "type": "integer",
+            "title": "Itemnumber"
+          },
+          "itemName": {
+            "type": "string",
+            "title": "Itemname"
+          },
+          "existsInDocument": {
+            "type": "boolean",
+            "title": "Existsindocument"
+          },
+          "detectedValue": {
+            "type": "string",
+            "title": "Detectedvalue"
+          },
+          "estimatedValue": {
+            "type": "string",
+            "title": "Estimatedvalue"
+          },
+          "estimateBasis": {
+            "type": "string",
+            "title": "Estimatebasis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itemNumber",
+          "itemName",
+          "existsInDocument",
+          "detectedValue",
+          "estimatedValue",
+          "estimateBasis"
+        ],
+        "title": "InspectionItem"
+      },
+      "InspectionRequest": {
+        "properties": {
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/Document"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Documents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "documents"
+        ],
+        "title": "InspectionRequest"
+      },
+      "InspectionResult": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/InspectionItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "inspectedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Inspectedat"
+          },
+          "modelUsed": {
+            "type": "string",
+            "title": "Modelused"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "inspectedAt",
+          "modelUsed"
+        ],
+        "title": "InspectionResult"
       },
       "JsonValue": {},
       "PresetOut": {

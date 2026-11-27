@@ -18,6 +18,7 @@ from .db import Database, ScenarioHead, ScenarioVersion, Run, EventRecord, Repor
 from .domain import ScenarioCreate, VersionCreate, AnalysisCreate, Report
 from .agent import load_agent
 from .worker import consume
+from . import inspection
 
 Key = Annotated[str, Header(alias='Idempotency-Key', min_length=1, max_length=128, pattern=r'^[A-Za-z0-9_.:-]+$')]
 
@@ -29,13 +30,17 @@ class BodyLimit:
     async def __call__(self, scope, receive, send):
         if scope['type'] != 'http' or scope['method'] not in ('POST', 'PUT', 'PATCH'):
             return await self.app(scope, receive, send)
+        is_inspection = scope["path"] == inspection.PATH
+        limit = inspection.BODY_BYTES if is_inspection else self.limit
         messages, size = [], 0
         while True:
             msg = await receive()
             if msg['type'] == 'http.disconnect':
                 return
             size += len(msg.get('body', b''))
-            if size > self.limit:
+            if size > limit:
+                if is_inspection:
+                    return await JSONResponse({'error': '검사 요청은 50 MiB 이하로 보내세요.', 'code': 'REQUEST_TOO_LARGE'}, status_code=413)(scope, receive, send)
                 return await JSONResponse({'detail': '요청 본문은 2MiB 이하로 보내세요'}, status_code=413)(scope, receive, send)
             messages.append(msg)
             if not msg.get('more_body', False):
@@ -97,6 +102,7 @@ def create_app(settings=None, database=None):
     app.state.database, app.state.settings = database, settings
     from .uploads import router as upload_router
     app.include_router(upload_router(database))
+    app.include_router(inspection.router)
     app.add_middleware(BodyLimit)
     if settings.cors_origins:
         app.add_middleware(CORSMiddleware, allow_origins=[x.strip() for x in settings.cors_origins.split(',') if x.strip()],
@@ -104,6 +110,8 @@ def create_app(settings=None, database=None):
 
     @app.exception_handler(RequestValidationError)
     async def invalid_input(_request, exc):
+        if _request.url.path == inspection.PATH:
+            return JSONResponse({'error': '문서 목록, 크기 및 PDF 원문을 확인하세요.', 'code': 'INVALID_REQUEST'}, status_code=422)
         return JSONResponse({'detail': [{'location': list(e['loc']), 'message': e['msg'], 'type': e['type']} for e in exc.errors()]}, status_code=422)
 
     @app.exception_handler(ValueError)

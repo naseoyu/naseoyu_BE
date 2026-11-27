@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-27",
+  "mode": "delegation",
+  "ocr_version": "1.13.11 (0f5a284)",
+  "remote_base": "89a7eb17c0242c7e4c31dfed12cb0f0375b5364f",
+  "archive_reviewed": "b45fdbcc3f73f634e2fcf9c59e5ca0d57e3331a3",
+  "migration": "Remote tracked be2 files compared to release after stripping prefix. README explains cd be2 and drops private document link. Windows launcher differs only by normalized whitespace/line endings.",
+  "reviewed": "f32d7e9bc5af4861dcd8139a431d9cfa4cb89e2c",
+  "re_reviewed": "2a4896f972f2f4fe3dffed4e5caf24b6bf99914a",
+  "initial": {
+    "total_files": 5,
+    "reviewed_files": 3,
+    "skipped_files": 0,
+    "coverage_rate": 1,
+    "reviewed": [
+      "be2/be2_backend/api.py",
+      "be2/be2_backend/inspection.py",
+      "be2/docs/openapi.json"
+    ],
+    "excluded_and_manually_read": [
+      {
+        "path": "be2/docs/FRONTEND.md",
+        "status": "modified",
+        "insertions": 18,
+        "deletions": 0,
+        "exclude_reason": "unsupported_ext"
+      },
+      {
+        "path": "be2/tests/test_inspection.py",
+        "status": "added",
+        "insertions": 60,
+        "deletions": 0,
+        "exclude_reason": "default_path"
+      }
+    ]
+  },
+  "final": {
+    "total_files": 3,
+    "reviewed_files": 2,
+    "skipped_files": 0,
+    "coverage_rate": 1,
+    "reviewed": [
+      "be2/be2_backend/inspection.py",
+      "be2/docs/openapi.json"
+    ],
+    "excluded_and_manually_read": [
+      {
+        "path": "be2/tests/test_inspection.py",
+        "status": "modified",
+        "insertions": 9,
+        "deletions": 0,
+        "exclude_reason": "default_path"
+      }
+    ]
+  },
+  "comments": [
+    {
+      "path": "be2/docs/openapi.json",
+      "category": "bug",
+      "severity": "medium",
+      "content": "422 described detail while runtime returns error/code. 413, 503 and 504 undocumented. Added shared error model, regenerated snapshot and tested runtime 422 against documented fields."
+    },
+    {
+      "path": "be2/be2_backend/inspection.py",
+      "category": "performance",
+      "severity": "medium",
+      "content": "Per-line alias normalization and matching ran on the event loop. 20,000 ordinary nonmatching lines took 0.167 seconds in the original loop. Precomputed aliases and moved matching to a thread; sequential document evidence order is preserved."
+    }
+  ],
+  "tests": "48 passed before, 49 passed after, one Starlette TestClient deprecation warning. Local Poppler installed.",
+  "limits": "No browser end-to-end, Windows, paid model, load, or BE1 calculation testing. DB, worker, SSE, cancellation and retry not changed or individually re-reviewed.",
+  "recommendation": "FE and BE2 to test real development proxy routing with one text PDF and one metadata-only preset before using this endpoint in the UI.",
+  "remote_delivery": {
+    "branch": "be2/work",
+    "base": "89a7eb17c0242c7e4c31dfed12cb0f0375b5364f",
+    "reviewed_code_remote_sha": "b85fbbe6b8cc07203ed61dcdaa7e6dbebf9c8652",
+    "verification": "Git diff against reviewed local code 2a4896f was empty after the five web commits."
+  }
+}
